@@ -1,30 +1,11 @@
+import { parseMeasurement, roundTo } from "./conversionHelpers.js";
+
 const CM_PER_INCH = 2.54;
 const CM_PER_METER = 100;
+const YARDS_PER_METER = 1.0936132983;
 const OZ_PER_SQ_YD_TO_GSM = 33.905747;
 
-function roundTo(value, decimals = 2) {
-  if (value == null || Number.isNaN(value)) return null;
-  return Number(value.toFixed(decimals));
-}
-
-function average(numbers) {
-  if (!numbers.length) return null;
-  const total = numbers.reduce((sum, value) => sum + value, 0);
-  return total / numbers.length;
-}
-
-function parseMeasurement(value) {
-  if (value == null || value === "") return null;
-  if (typeof value === "number") return value;
-
-  const matches = String(value).match(/\d+(\.\d+)?/g);
-  if (!matches) return null;
-
-  const numbers = matches.map(Number).filter((number) => !Number.isNaN(number));
-  return average(numbers);
-}
-
-function getWidthCm({ widthCm, widthInch }) {
+export function getWidthCm({ widthCm, widthInch }) {
   const parsedWidthCm = parseMeasurement(widthCm);
   if (parsedWidthCm != null) return parsedWidthCm;
 
@@ -32,6 +13,31 @@ function getWidthCm({ widthCm, widthInch }) {
   if (parsedWidthInch == null) return null;
 
   return parsedWidthInch * CM_PER_INCH;
+}
+
+export function metersToYards(meters) {
+  const parsedMeters = parseMeasurement(meters);
+  if (parsedMeters == null) return null;
+  return parsedMeters * YARDS_PER_METER;
+}
+
+export function yardsToMeters(yards) {
+  const parsedYards = parseMeasurement(yards);
+  if (parsedYards == null) return null;
+  return parsedYards / YARDS_PER_METER;
+}
+
+export function deriveLengthConversions(input = {}) {
+  const metersInput = input.meters ?? input.length_meters ?? input.length_m;
+  const yardsInput = input.yards ?? input.length_yards ?? input.length_yd;
+
+  const meters = parseMeasurement(metersInput) ?? yardsToMeters(yardsInput);
+  const yards = parseMeasurement(yardsInput) ?? metersToYards(metersInput);
+
+  return {
+    length_meters: roundTo(meters),
+    length_yards: roundTo(yards),
+  };
 }
 
 function gsmFromInput({ weightGsm, weightGlm, weightOz, widthCm, widthInch }) {
@@ -54,7 +60,7 @@ function gsmFromInput({ weightGsm, weightGlm, weightOz, widthCm, widthInch }) {
   return null;
 }
 
-function deriveFabricMeasurements(input = {}) {
+export function deriveFabricMeasurements(input = {}) {
   const resolvedWidthCm = getWidthCm({
     widthCm: input.widthCm ?? input.width_cm,
     widthInch: input.widthInch ?? input.width_inch,
@@ -84,10 +90,3 @@ function deriveFabricMeasurements(input = {}) {
     weight_oz: roundTo(oz),
   };
 }
-
-module.exports = {
-  deriveFabricMeasurements,
-  getWidthCm,
-  parseMeasurement,
-  roundTo,
-};

@@ -1,10 +1,18 @@
-DROP TABLE IF EXISTS developments;
+DROP TABLE IF EXISTS stages_of_material;
 DROP TABLE IF EXISTS fabrics;
 DROP TABLE IF EXISTS factory_contacts;
 DROP TABLE IF EXISTS factories;
+DROP TABLE IF EXISTS users;
+
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  username TEXT UNIQUE NOT NULL,
+  password TEXT NOT NULL
+);
 
 CREATE TABLE factories (
   id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   factory_name VARCHAR(255) NOT NULL,
   country VARCHAR(100),
   address TEXT,
@@ -53,7 +61,7 @@ CREATE TABLE fabrics (
   status VARCHAR(100) NOT NULL DEFAULT 'active'
 );
 
-CREATE TABLE developments (
+CREATE TABLE stages_of_material (
   id SERIAL PRIMARY KEY,
   fabric_id INTEGER NOT NULL REFERENCES fabrics(id) ON DELETE CASCADE,
   factory_id INTEGER NOT NULL REFERENCES factories(id) ON DELETE CASCADE,
@@ -64,7 +72,8 @@ CREATE TABLE developments (
   notes TEXT
 );
 
+CREATE INDEX idx_factories_user_id ON factories(user_id);
 CREATE INDEX idx_factory_contacts_factory_id ON factory_contacts(factory_id);
 CREATE INDEX idx_fabrics_factory_id ON fabrics(factory_id);
-CREATE INDEX idx_developments_fabric_id ON developments(fabric_id);
-CREATE INDEX idx_developments_factory_id ON developments(factory_id);
+CREATE INDEX idx_stages_of_material_fabric_id ON stages_of_material(fabric_id);
+CREATE INDEX idx_stages_of_material_factory_id ON stages_of_material(factory_id);
