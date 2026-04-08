@@ -5,8 +5,8 @@
     "#*": "./*.js"
   },
   "scripts": {
-    "start": "node --env-file=.env server.js",
-    "dev": "node --watch --env-file=.env server.js",
+    "start": "node server.js",
+    "dev": "node --watch server.js",
     "db:schema": "psql -d lukisourcing -f db/schema.sql",
     "db:seed": "node --env-file=.env db/seed.js",
     "db:reset": "npm run db:schema && npm run db:seed"
