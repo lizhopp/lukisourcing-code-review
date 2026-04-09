@@ -19,11 +19,11 @@ async function seed() {
     rows: [user],
   } = await db.query(
     `
-      INSERT INTO users (username, password)
-      VALUES ($1, $2)
+      INSERT INTO users (first_name, last_name, company, email, password)
+      VALUES ($1, $2, $3, $4, $5)
       RETURNING *
     `,
-    ["demo_user", hashedPassword],
+    ["Lucas", "Montenegro", "Luki Sourcing", "lucas@example.com", hashedPassword],
   );
 
   const {

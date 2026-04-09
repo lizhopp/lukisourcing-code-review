@@ -1,28 +1,28 @@
 import bcrypt from "bcrypt";
 import db from "#db/client";
 
-export async function createUser(username, password) {
+export async function createUser(first_name, last_name, company, email, password) {
   const sql = `
-    INSERT INTO users (username, password)
-    VALUES ($1, $2)
+    INSERT INTO users (first_name, last_name, company, email, password)
+    VALUES ($1, $2, $3, $4, $5)
     RETURNING *
   `;
   const hashedPassword = await bcrypt.hash(password, 10);
   const {
     rows: [user],
-  } = await db.query(sql, [username, hashedPassword]);
+  } = await db.query(sql, [first_name, last_name, company, email, hashedPassword]);
   return user;
 }
 
-export async function getUserByUsername(username) {
+export async function getUserByEmail(email) {
   const sql = `
     SELECT *
     FROM users
-    WHERE username = $1
+    WHERE email = $1
   `;
   const {
     rows: [user],
-  } = await db.query(sql, [username]);
+  } = await db.query(sql, [email]);
   return user;
 }
 
