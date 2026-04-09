@@ -10,6 +10,9 @@ app.use(getUserFromToken);
 app.get("/", (req, res) => {
   res.send("LukiSourcing API is running.");
 });
+app.get("/greet", (req, res) => {
+  res.status(200).send("Hello from LukiSourcing.");
+});
 app.use("/api", apiRouter);
 app.use(errorHandler);
 
