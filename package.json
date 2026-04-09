@@ -5,12 +5,12 @@
     "#*": "./*.js"
   },
   "scripts": {
-    "start": "node --env-file=.env server.js",
+    "start": "node server.js",
     "dev": "node --watch --env-file=.env server.js",
     "client": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "db:schema": "psql -d lukisourcing -f db/schema.sql",
+    "db:schema": "psql $DATABASE_URL -f db/schema.sql",
     "db:seed": "node --env-file=.env db/seed.js",
     "db:reset": "npm run db:schema && npm run db:seed"
   },
