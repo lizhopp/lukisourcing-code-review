@@ -1,5 +1,9 @@
 import db from "#db/client";
 
+function normalizeOptionalValue(value) {
+  return value === "" ? null : value;
+}
+
 export async function createFactoryContact(contactData) {
   const sql = `
     INSERT INTO factory_contacts (
@@ -18,11 +22,11 @@ export async function createFactoryContact(contactData) {
   const values = [
     contactData.factory_id,
     contactData.full_name,
-    contactData.job_title ?? null,
-    contactData.email ?? null,
-    contactData.phone ?? null,
+    normalizeOptionalValue(contactData.job_title),
+    normalizeOptionalValue(contactData.email),
+    normalizeOptionalValue(contactData.phone),
     contactData.is_primary_contact ?? false,
-    contactData.notes ?? null,
+    normalizeOptionalValue(contactData.notes),
   ];
 
   const {
@@ -40,4 +44,35 @@ export async function getContactsByFactoryId(factoryId) {
   `;
   const { rows: contacts } = await db.query(sql, [factoryId]);
   return contacts;
+}
+
+export async function updateFactoryContact(id, factoryId, contactData) {
+  const sql = `
+    UPDATE factory_contacts
+    SET
+      full_name = $3,
+      job_title = $4,
+      email = $5,
+      phone = $6,
+      is_primary_contact = $7,
+      notes = $8
+    WHERE id = $1
+      AND factory_id = $2
+    RETURNING *
+  `;
+
+  const {
+    rows: [contact],
+  } = await db.query(sql, [
+    id,
+    factoryId,
+    contactData.full_name,
+    normalizeOptionalValue(contactData.job_title),
+    normalizeOptionalValue(contactData.email),
+    normalizeOptionalValue(contactData.phone),
+    contactData.is_primary_contact ?? false,
+    normalizeOptionalValue(contactData.notes),
+  ]);
+
+  return contact;
 }

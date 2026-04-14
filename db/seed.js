@@ -9,6 +9,7 @@ console.log("Database seeded.");
 async function seed() {
   await db.query("DELETE FROM activity_log");
   await db.query("DELETE FROM notes");
+  await db.query("DELETE FROM material_fibers");
   await db.query("DELETE FROM material_factories");
   await db.query("DELETE FROM materials");
   await db.query("DELETE FROM factory_contacts");
@@ -114,20 +115,44 @@ async function seed() {
     [
       user.id,
       "Chalk Wax Melange",
-      "Fabric",
-      "Face-side chalk-mark wax coating on cross dye melange tencel.",
-      "sampling",
+      "Fall",
+      2025,
+      "Outerwear / Collection A",
+      280,
+      "gsm",
+      57.5,
+      "inches",
+      56.25,
+      "inches",
+      "Crosshatch twill weave",
       12.5,
-      "2025-08-21",
+      "USD/yard",
+      "Mina Cho",
+      "mina@agency.example.com",
+      "+82 10 5555 3000",
+      "sampling requested",
+      1,
     ],
     [
       user.id,
       "Stretch Cotton Nylon Twill",
-      "Fabric",
-      "166G/M2 stretch twill for development review.",
-      "requested",
+      "Spring",
+      2026,
+      "Bottoms / Collection B",
+      166,
+      "gsm",
+      54,
+      "inches",
+      53,
+      "inches",
+      "Twill construction",
       9.75,
-      "2025-08-25",
+      "USD/yard",
+      null,
+      null,
+      null,
+      "pulled",
+      2,
     ],
   ];
 
@@ -141,13 +166,25 @@ async function seed() {
         INSERT INTO materials (
           created_by,
           name,
-          category,
-          description,
+          season,
+          year,
+          category_collection,
+          weight_value,
+          weight_unit,
+          width_value,
+          width_unit,
+          cutable_width_value,
+          cutable_width_unit,
+          construction,
+          price_value,
+          price_unit,
+          agent_name,
+          agent_email,
+          agent_phone,
           status,
-          cost,
-          eta
+          option_number
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
         RETURNING *
       `,
       material,
@@ -161,15 +198,17 @@ async function seed() {
       INSERT INTO material_factories (
         material_id,
         factory_id,
+        supplier_quality_name,
         quoted_cost,
         lead_time,
         notes
       )
-      VALUES ($1, $2, $3, $4, $5)
+      VALUES ($1, $2, $3, $4, $5, $6)
     `,
     [
       createdMaterials[0].id,
       createdFactories[0].id,
+      "MZT-WAX-2048",
       12.5,
       "25 days",
       "First sample submitted for review.",
@@ -181,19 +220,43 @@ async function seed() {
       INSERT INTO material_factories (
         material_id,
         factory_id,
+        supplier_quality_name,
         quoted_cost,
         lead_time,
         notes
       )
-      VALUES ($1, $2, $3, $4, $5)
+      VALUES ($1, $2, $3, $4, $5, $6)
     `,
     [
       createdMaterials[1].id,
       createdFactories[1].id,
+      "BMBX-STN-166",
       9.75,
       "18 days",
       "Requested quote and available yardage.",
     ],
+  );
+
+  await db.query(
+    `
+      INSERT INTO material_fibers (material_id, percentage, fiber_name)
+      VALUES
+        ($1, $2, $3),
+        ($1, $4, $5),
+        ($1, $6, $7)
+    `,
+    [createdMaterials[0].id, 70, "Tencel", 20, "Cotton", 10, "Linen"],
+  );
+
+  await db.query(
+    `
+      INSERT INTO material_fibers (material_id, percentage, fiber_name)
+      VALUES
+        ($1, $2, $3),
+        ($1, $4, $5),
+        ($1, $6, $7)
+    `,
+    [createdMaterials[1].id, 66, "Cotton", 29, "Nylon", 5, "Spandex"],
   );
 
   await db.query(
@@ -209,6 +272,6 @@ async function seed() {
       INSERT INTO activity_log (material_id, user_id, action_type, old_value, new_value)
       VALUES ($1, $2, $3, $4, $5)
     `,
-    [createdMaterials[0].id, user.id, "status_update", "requested", "sampling"],
+    [createdMaterials[0].id, user.id, "status_update", "pulled", "sampling requested"],
   );
 }

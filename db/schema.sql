@@ -1,5 +1,6 @@
 DROP TABLE IF EXISTS activity_log CASCADE;
 DROP TABLE IF EXISTS notes CASCADE;
+DROP TABLE IF EXISTS material_fibers CASCADE;
 DROP TABLE IF EXISTS material_factories CASCADE;
 DROP TABLE IF EXISTS materials CASCADE;
 DROP TABLE IF EXISTS developments CASCADE;
@@ -51,21 +52,41 @@ CREATE TABLE materials (
   id SERIAL PRIMARY KEY,
   created_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
   name VARCHAR(255) NOT NULL,
-  category VARCHAR(100),
-  description TEXT,
-  status VARCHAR(100) NOT NULL DEFAULT 'requested',
-  cost NUMERIC(10, 2),
-  eta DATE
+  season VARCHAR(50),
+  year INTEGER,
+  category_collection VARCHAR(255),
+  weight_value NUMERIC(10, 2),
+  weight_unit VARCHAR(10),
+  width_value NUMERIC(10, 2),
+  width_unit VARCHAR(20),
+  cutable_width_value NUMERIC(10, 2),
+  cutable_width_unit VARCHAR(20),
+  construction TEXT,
+  price_value NUMERIC(10, 2),
+  price_unit VARCHAR(20),
+  agent_name VARCHAR(255),
+  agent_email VARCHAR(255),
+  agent_phone VARCHAR(50),
+  status VARCHAR(100) NOT NULL DEFAULT 'pulled',
+  option_number INTEGER
 );
 
 CREATE TABLE material_factories (
   id SERIAL PRIMARY KEY,
   material_id INTEGER NOT NULL REFERENCES materials(id) ON DELETE CASCADE,
   factory_id INTEGER NOT NULL REFERENCES factories(id) ON DELETE CASCADE,
+  supplier_quality_name VARCHAR(255) NOT NULL,
   quoted_cost NUMERIC(10, 2),
   lead_time VARCHAR(100),
   notes TEXT,
   UNIQUE (material_id, factory_id)
+);
+
+CREATE TABLE material_fibers (
+  id SERIAL PRIMARY KEY,
+  material_id INTEGER NOT NULL REFERENCES materials(id) ON DELETE CASCADE,
+  percentage NUMERIC(5, 2),
+  fiber_name VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE notes (
@@ -91,5 +112,6 @@ CREATE INDEX idx_factory_contacts_factory_id ON factory_contacts(factory_id);
 CREATE INDEX idx_materials_created_by ON materials(created_by);
 CREATE INDEX idx_material_factories_material_id ON material_factories(material_id);
 CREATE INDEX idx_material_factories_factory_id ON material_factories(factory_id);
+CREATE INDEX idx_material_fibers_material_id ON material_fibers(material_id);
 CREATE INDEX idx_notes_material_id ON notes(material_id);
 CREATE INDEX idx_activity_log_material_id ON activity_log(material_id);

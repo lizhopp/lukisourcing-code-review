@@ -463,6 +463,40 @@ th {
   grid-column: 1 / -1;
 }
 
+.field-group {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 160px;
+  gap: 12px;
+}
+
+.factory-picker {
+  position: relative;
+}
+
+.factory-results {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: #0d0d0d;
+}
+
+.factory-result {
+  border: 1px solid var(--border);
+  background: #111111;
+  color: var(--text);
+  text-align: left;
+  padding: 12px 14px;
+  border-radius: 14px;
+}
+
+.create-factory-button {
+  align-self: flex-start;
+}
+
 .section-actions {
   display: flex;
   gap: 12px;
@@ -487,6 +521,41 @@ th {
 .error-text {
   margin: 0;
   color: #ff8f8f;
+}
+
+.fiber-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.contact-card,
+.contact-editor {
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 16px;
+  background: #0d0d0d;
+}
+
+.fiber-row {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr) auto;
+  gap: 12px;
+}
+
+.fiber-row input {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 14px 16px;
+  background: #0b0b0b;
+  color: var(--text);
+  font-family: inherit;
+}
+
+.add-row-button {
+  margin-top: 12px;
+  align-self: flex-start;
 }
 
 .full-width {
@@ -519,6 +588,11 @@ th {
   }
 
   .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .field-group,
+  .fiber-row {
     grid-template-columns: 1fr;
   }
 }

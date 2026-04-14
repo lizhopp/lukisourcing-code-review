@@ -95,7 +95,7 @@ export default function Dashboard() {
                 <tr key={material.id}>
                   <td>{material.name}</td>
                   <td>{material.factory_names || "Unassigned"}</td>
-                  <td>{material.category || "—"}</td>
+                  <td>{material.category_collection || "—"}</td>
                   <td>
                     <span className="tag neutral">{material.status}</span>
                   </td>

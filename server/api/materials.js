@@ -35,7 +35,11 @@ router.get("/", requireUser, async (req, res) => {
   res.send(materials);
 });
 
-router.post("/", requireUser, requireBody(["name"]), async (req, res) => {
+router.post(
+  "/",
+  requireUser,
+  requireBody(["name", "factory_id", "supplier_quality_name"]),
+  async (req, res) => {
   const canUseFactory = await validateFactoryAccess(
     req.body.factory_id,
     req.user.id,
@@ -48,7 +52,8 @@ router.post("/", requireUser, requireBody(["name"]), async (req, res) => {
 
   const material = await createMaterial(req.user.id, req.body);
   res.status(201).send(material);
-});
+  },
+);
 
 router.get("/:id", requireUser, async (req, res) => {
   const material = await getMaterialById(req.params.id, req.user.id);
@@ -77,12 +82,30 @@ router.patch("/:id", requireUser, async (req, res) => {
 
   const updatedMaterial = await updateMaterial(req.params.id, req.user.id, {
     name: req.body.name ?? existingMaterial.name,
-    category: req.body.category ?? existingMaterial.category,
-    description: req.body.description ?? existingMaterial.description,
+    season: req.body.season ?? existingMaterial.season,
+    year: req.body.year ?? existingMaterial.year,
+    category_collection:
+      req.body.category_collection ?? existingMaterial.category_collection,
+    weight_value: req.body.weight_value ?? existingMaterial.weight_value,
+    weight_unit: req.body.weight_unit ?? existingMaterial.weight_unit,
+    width_value: req.body.width_value ?? existingMaterial.width_value,
+    width_unit: req.body.width_unit ?? existingMaterial.width_unit,
+    cutable_width_value:
+      req.body.cutable_width_value ?? existingMaterial.cutable_width_value,
+    cutable_width_unit:
+      req.body.cutable_width_unit ?? existingMaterial.cutable_width_unit,
+    construction: req.body.construction ?? existingMaterial.construction,
+    price_value: req.body.price_value ?? existingMaterial.price_value,
+    price_unit: req.body.price_unit ?? existingMaterial.price_unit,
+    agent_name: req.body.agent_name ?? existingMaterial.agent_name,
+    agent_email: req.body.agent_email ?? existingMaterial.agent_email,
+    agent_phone: req.body.agent_phone ?? existingMaterial.agent_phone,
     status: req.body.status ?? existingMaterial.status,
-    cost: req.body.cost ?? existingMaterial.cost,
-    eta: req.body.eta ?? existingMaterial.eta,
+    option_number: req.body.option_number ?? existingMaterial.option_number,
     factory_id: nextFactoryId,
+    supplier_quality_name:
+      req.body.supplier_quality_name ?? existingMaterial.supplier_quality_name,
+    fibers: req.body.fibers ?? existingMaterial.fibers,
   });
 
   res.send(updatedMaterial);
