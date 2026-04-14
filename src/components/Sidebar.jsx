@@ -20,7 +20,7 @@ export default function Sidebar({ currentUser, onLogout }) {
       <nav className="nav">
         <NavLink to="/">Dashboard</NavLink>
         <NavLink to="/factories">Factories</NavLink>
-        <NavLink to="/fabrics">Fabrics</NavLink>
+        <NavLink to="/materials">Materials</NavLink>
         <NavLink to="/stage-of-material">Stage of Material</NavLink>
       </nav>
 

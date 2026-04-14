@@ -1,34 +1,45 @@
+import { useEffect, useState } from "react";
 import PageHeader from "../components/PageHeader.jsx";
 
-const factories = [
-  {
-    name: "Mozartex",
-    country: "China",
-    contact: "Lina Chen",
-    email: "lina@mozartex.example.com",
-  },
-  {
-    name: "Bombyx",
-    country: "Korea",
-    contact: "Min Park",
-    email: "min@bombyx.example.com",
-  },
-  {
-    name: "YESUNG",
-    country: "Korea",
-    contact: "Sora Kim",
-    email: "sora@yesung.example.com",
-  },
-];
+const TOKEN_KEY = "luki_token";
 
 export default function Factories() {
+  const [factories, setFactories] = useState([]);
+
+  useEffect(() => {
+    async function loadFactories() {
+      const token = localStorage.getItem(TOKEN_KEY);
+      if (!token) {
+        return;
+      }
+
+      try {
+        const response = await fetch("/api/factories", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          return;
+        }
+
+        const data = await response.json();
+        setFactories(data);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    loadFactories();
+  }, []);
+
   return (
     <>
       <PageHeader
         eyebrow="Sourcing Base"
         title="Factories"
         description="Manage your mills, partners, and production contacts."
-        actionLabel="+ Add Factory"
       />
 
       <section className="card stack">
@@ -37,18 +48,22 @@ export default function Factories() {
           <p>Each factory belongs to the logged-in sourcing workspace.</p>
         </div>
 
-        <div className="list-grid">
-          {factories.map((factory) => (
-            <article key={factory.name} className="list-card">
-              <div className="list-card-top">
-                <h3>{factory.name}</h3>
-                <span className="mini-tag">{factory.country}</span>
-              </div>
-              <p>{factory.contact}</p>
-              <p className="muted-copy">{factory.email}</p>
-            </article>
-          ))}
-        </div>
+        {factories.length === 0 ? (
+          <p className="empty-state">No factories yet. Seed data or create one from the API.</p>
+        ) : (
+          <div className="list-grid">
+            {factories.map((factory) => (
+              <article key={factory.id} className="list-card">
+                <div className="list-card-top">
+                  <h3>{factory.factory_name}</h3>
+                  <span className="mini-tag">{factory.country || "—"}</span>
+                </div>
+                <p>{factory.main_phone || "No phone listed"}</p>
+                <p className="muted-copy">{factory.main_email || "No email listed"}</p>
+              </article>
+            ))}
+          </div>
+        )}
       </section>
     </>
   );

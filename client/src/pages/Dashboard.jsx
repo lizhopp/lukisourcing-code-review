@@ -1,36 +1,65 @@
+import { useEffect, useState } from "react";
 import PageHeader from "../components/PageHeader.jsx";
 
-const summaryCards = [
-  { label: "Requested", value: "12", tone: "blue" },
-  { label: "Sampling", value: "8", tone: "pink" },
-  { label: "Approved", value: "21", tone: "green" },
-];
-
-const recentFabrics = [
-  {
-    fabric: "PF10002065",
-    factory: "Bombyx",
-    composition: "66% Cotton 29% Nylon 5% Spandex",
-    status: "Sampling",
-    tone: "sampling",
-  },
-  {
-    fabric: "SJ-1408",
-    factory: "Shinjintex",
-    composition: "41% Modal 38% Organic Cotton 17% Linen 4% Spandex",
-    status: "Approved",
-    tone: "approved",
-  },
-];
+const TOKEN_KEY = "luki_token";
 
 export default function Dashboard() {
+  const [materials, setMaterials] = useState([]);
+
+  useEffect(() => {
+    async function loadMaterials() {
+      const token = localStorage.getItem(TOKEN_KEY);
+      if (!token) {
+        return;
+      }
+
+      try {
+        const response = await fetch("/api/materials", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          return;
+        }
+
+        const data = await response.json();
+        setMaterials(data);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    loadMaterials();
+  }, []);
+
+  const summaryCards = [
+    {
+      label: "Requested",
+      value: String(materials.filter((material) => material.status === "requested").length),
+      tone: "blue",
+    },
+    {
+      label: "Sampling",
+      value: String(materials.filter((material) => material.status === "sampling").length),
+      tone: "pink",
+    },
+    {
+      label: "Approved",
+      value: String(materials.filter((material) => material.status === "approved").length),
+      tone: "green",
+    },
+  ];
+
+  const recentMaterials = materials.slice(0, 5);
+
   return (
     <>
       <PageHeader
         eyebrow="Overview"
-        title="Fabric Dashboard"
+        title="Materials Dashboard"
         description="Track sourcing from request to delivery."
-        actionLabel="+ Add Fabric"
       />
 
       <section className="grid three">
@@ -44,32 +73,36 @@ export default function Dashboard() {
 
       <section className="card table-wrap">
         <div className="section-heading">
-          <h2>Recent Fabrics</h2>
+          <h2>Recent Materials</h2>
           <p>Quick view of active development materials.</p>
         </div>
 
-        <table>
-          <thead>
-            <tr>
-              <th>Fabric</th>
-              <th>Factory</th>
-              <th>Composition</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {recentFabrics.map((fabric) => (
-              <tr key={fabric.fabric}>
-                <td>{fabric.fabric}</td>
-                <td>{fabric.factory}</td>
-                <td>{fabric.composition}</td>
-                <td>
-                  <span className={`tag ${fabric.tone}`}>{fabric.status}</span>
-                </td>
+        {recentMaterials.length === 0 ? (
+          <p className="empty-state">No materials yet. Add one from the Materials page.</p>
+        ) : (
+          <table>
+            <thead>
+              <tr>
+                <th>Material</th>
+                <th>Factory</th>
+                <th>Category</th>
+                <th>Status</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {recentMaterials.map((material) => (
+                <tr key={material.id}>
+                  <td>{material.name}</td>
+                  <td>{material.factory_names || "Unassigned"}</td>
+                  <td>{material.category || "—"}</td>
+                  <td>
+                    <span className="tag neutral">{material.status}</span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </section>
     </>
   );
