@@ -1,3 +1,5 @@
+import { getApiUrl } from "./client.js";
+
 function parseResponseBody(responseText) {
   if (!responseText) return null;
 
@@ -9,7 +11,7 @@ function parseResponseBody(responseText) {
 }
 
 async function sendAuthRequest(path, formData, fallbackMessage) {
-  const response = await fetch(path, {
+  const response = await fetch(getApiUrl(path), {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

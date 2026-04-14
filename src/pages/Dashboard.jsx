@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { getApiUrl } from "../api/client.js";
 import PageHeader from "../components/PageHeader.jsx";
 
 const TOKEN_KEY = "luki_token";
@@ -14,7 +15,7 @@ export default function Dashboard() {
       }
 
       try {
-        const response = await fetch("/api/materials", {
+        const response = await fetch(getApiUrl("/api/materials"), {
           headers: {
             Authorization: `Bearer ${token}`,
           },

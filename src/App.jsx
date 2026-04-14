@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
+import { getApiUrl } from "./api/client.js";
 import AppLayout from "./components/AppLayout.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import Factories from "./pages/Factories.jsx";
@@ -26,7 +27,7 @@ export default function App() {
       setLoadingUser(true);
 
       try {
-        const response = await fetch("/api/users/me", {
+        const response = await fetch(getApiUrl("/api/users/me"), {
           headers: {
             Authorization: `Bearer ${token}`,
           },

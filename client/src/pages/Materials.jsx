@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { getApiUrl } from "../api/client.js";
 import PageHeader from "../components/PageHeader.jsx";
 
 const TOKEN_KEY = "luki_token";
@@ -37,10 +38,10 @@ export default function Materials() {
 
     try {
       const [materialsResponse, factoriesResponse] = await Promise.all([
-        fetch("/api/materials", {
+        fetch(getApiUrl("/api/materials"), {
           headers: { Authorization: `Bearer ${token}` },
         }),
-        fetch("/api/factories", {
+        fetch(getApiUrl("/api/factories"), {
           headers: { Authorization: `Bearer ${token}` },
         }),
       ]);
@@ -111,7 +112,7 @@ export default function Materials() {
 
     try {
       const response = await fetch(
-        editingId ? `/api/materials/${editingId}` : "/api/materials",
+        getApiUrl(editingId ? `/api/materials/${editingId}` : "/api/materials"),
         {
           method: editingId ? "PATCH" : "POST",
           headers: {
